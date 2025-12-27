@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Weather flask</title>
+
+  <!-- Bootstrap + Chart.js -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body id="page-body" data-weather="{{ current.main if current else '' }}">
+  <!-- Visual layers -->
+  <div id="sky">
+    <div id="sun" class="hidden"></div>
+    <div id="cloud-layer" class="hidden"></div>
+    <div id="rain-layer" class="hidden"></div>
+    <div id="snow-layer" class="hidden"></div>
+    <div id="stars-layer" class="hidden"></div>
+    <div class="overlay"></div>
+  </div>
+
+  <div class="container max-w-900 py-4">
+
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-3">
+      <h1 class="app-title">Weather</h1>
+      <div class="d-flex gap-2 align-items-center">
+
+        <!-- Search -->
+        <form id="search-form" class="d-flex" method="post" action="/">
+          <!-- match JS: cityInput -->
+          <input class="form-control search-input" type="search"
+                 name="city" id="cityInput" placeholder="City (e.g., Paris)">
+          <!-- match JS: searchBtn -->
+          <button class="btn btn-primary" type="submit" id="searchBtn">Search</button>
+        </form>
+
+        <button id="toggle-theme" class="btn btn-outline-light">Dark</button>
+
+        <!-- Favorites -->
+        <a class="btn btn-outline-light" href="{{ url_for('favorites') }}">Favorites</a>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="row g-3">
+
+      <!-- Current weather card -->
+      <div class="col-12 col-md-5">
+        <div class="glass-card p-3" id="currentWeather">
+
+          {% if current %}
+          <div class="d-flex align-items-center">
+            <img class="weather-ico" src="http://openweathermap.org/img/wn/{{ current.icon }}@2x.png" alt="">
+            <div class="ms-3">
+              <h2 class="city mb-0">{{ current.city }}, {{ current.country }}</h2>
+              <p class="desc mb-0">{{ current.description }}</p>
+              <h3 class="temp mt-2">{{ current.temp }}°C</h3>
+            </div>
+
+            <div class="ms-auto text-end">
+              <form method="post" action="{{ url_for('add_fav') }}">
+                <input type="hidden" name="city" value="{{ current.city }}">
+                <button class="btn fav-btn" title="Add to favorites">★</button>
+              </form>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row small-info">
+            <div class="col-6">
+              <p><strong>Feels:</strong> {{ current.feels_like }}°C</p>
+              <p><strong>Humidity:</strong> {{ current.humidity }}%</p>
+            </div>
+            <div class="col-6 text-end">
+              <p><strong>Wind:</strong> {{ current.wind_speed }} m/s</p>
+              <p><strong>Pressure:</strong> {{ current.pressure }} hPa</p>
+            </div>
+          </div>
+
+          {% else %}
+          <p class="text-muted">Search for a city to see weather.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- 5-Day Forecast -->
+<div class="col-12 col-md-7">
+  <div class="glass-card p-3">
+    <h4 class="mb-3">5-Day Forecast</h4>
+
+    {% if forecast %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3" id="forecast">
+
+      {% for day in forecast %}
+      <div class="col">
+        <div class="forecast-box p-3 text-center">
+          <h6 class="fw-bold">{{ day.date }}</h6>
+
+          {# use first entry for icon/description because Python gives: date, min, max, entries[] #}
+          {% set first = day.entries[0] %}
+          <img src="http://openweathermap.org/img/wn/{{ first.icon }}@2x.png" class="forecast-icon" />
+
+          <p class="mb-1">{{ first.desc }}</p>
+
+          <p class="temp-range mb-0">
+            <strong>{{ day.max }}°</strong> / {{ day.min }}°
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+    {% else %}
+    <p class="text-muted">No forecast data available.</p>
+    {% endif %}
+  </div>
+</div>  
+
+    </main>
+
+    <!-- Search history container for JS -->
+    <div class="mt-3">
+      <div id="searchHistory"></div>
+    </div>
+
+    <!-- Temp chart for Chart.js -->
+    <div class="mt-3">
+      <canvas id="tempChart"></canvas>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

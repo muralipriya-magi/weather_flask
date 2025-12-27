@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Favorites — GlassWeather</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-neutral">
+  <div class="overlay"></div>
+
+  <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Favorites</h2>
+      <a class="btn btn-outline-light" href="{{ url_for('index') }}">Back Home</a>
+    </div>
+
+    <div class="row g-4">
+      {% for f in favs %}
+      <div class="col-md-4">
+        <div class="glass-card p-3">
+          <div class="d-flex align-items-center">
+            <img src="http://openweathermap.org/img/wn/{{ f.icon }}@2x.png" alt="" />
+            <div class="ms-3">
+              <h5>{{ f.city }}, {{ f.country }}</h5>
+              <p class="mb-0">{{ f.temp }}°C • {{ f.description }}</p>
+            </div>
+            <div class="ms-auto">
+              <a href="{{ url_for('remove_fav', city=f.city) }}" class="btn btn-sm btn-outline-light">Remove</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

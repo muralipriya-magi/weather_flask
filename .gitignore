@@ -1,0 +1,21 @@
+# Environment variables
+.env
+.env.*
+
+# Virtual environment
+venv/
+env/
+myenv/
+
+# Python cache
+_pycache_/
+*.pyc
+
+# Flask
+instance/
+
+# Logs
+*.log
+
+#IDE
+.vscode/
